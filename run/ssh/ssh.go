@@ -8,8 +8,7 @@ import (
 	"io"
 	"log"
 	"strings"
-	"GoPAN/utils/panssh"
-    "GoPAN/utils/cps"
+	"GoPAN/utils"
 	"time"
 )
 

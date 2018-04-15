@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"swisspan/utils"
+	"GoPAN/utils"
 	"time"
 )
 
