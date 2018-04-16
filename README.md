@@ -23,8 +23,10 @@ Running the scripts
 
 2. Run the script to get help
 
-    > ./pan
-    Usage:
+> ./pan
+    
+    
+    >Usage:
       pan [command]
 
     >Available Commands:
