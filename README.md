@@ -1,5 +1,6 @@
-non-oficcial script set to deal with Palo Alto networks products.
+Non-oficcial script set to deal with Palo Alto networks products.
 
+___
 Installation steps (in case you don't want to dowload the precompiled binaries or your system isn't MAC or windowsx64):
 
 1. Install go for your system.
@@ -33,17 +34,19 @@ Running the scripts
    > Flags:
       -h, --help   help for pan
 
+
+___
 Available scripts:
 
 1. cps. 
 
-Getting the CPS per zone in palo alto firewall using SNMP (requieres PAN-OS 8.0+) the csv files will be saved in the working directory. You usually run it for a week or 2 and then open the csv to get the max CPS per zone and set the alert to 1.2x and the block rate to 1.5x
+    Getting the CPS per zone in palo alto firewall using SNMP (requieres PAN-OS 8.0+) the csv files will be saved in the working directory. You usually run it for a week or 2 and then open the csv to get the max CPS per zone and set the alert to 1.2x and the block rate to 1.5x
 
-Example
-> ./pan run cps -c <snmp-community> -i <firewall-ip>
+    Example
+    > ./pan run cps -c <snmp-community> -i <firewall-ip>
 
 2. ssh.
 
-Sent a batch of commands to a firewall or panorama using SSH. The input accepts either a filename in the current working directory containing a set of commands or a single command. It can send either configuration commands or operational command but no both. The commands can be once or every X minutes.
+    Sent a batch of commands to a firewall or panorama using SSH. The input accepts either a filename in the current working directory containing a set of commands or a single command. It can send either configuration commands or operational command but no both. The commands can be once or every X minutes.
 
-Example:
+    Example:
