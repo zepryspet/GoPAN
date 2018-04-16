@@ -33,7 +33,7 @@ Running the scripts
       help        Help about any command
       run         Pre-built scripts to collect and process firewall data
 
-   > Flags:
+    > Flags:
       -h, --help   help for pan
 
 
