@@ -30,7 +30,7 @@ func Snmpgen(fqdn string, community string, minutes int) {
 		}
 		err := params.Connect()
 		if err != nil {
-			pan.Logerror(err)
+			pan.Logerror(err, true)
 		}
 		defer params.Conn.Close()
 		//oids := []string{".1.3.6.1.4.1.25461.2.1.2.3.10.1.1", ".1.3.6.1.4.1.25461.2.1.2.3.10.1.1.5.84.114.117.115.116"}
@@ -46,14 +46,14 @@ func Snmpgen(fqdn string, community string, minutes int) {
 
 		err = params.BulkWalk(oidZone, saveZone)
 		if err != nil {
-			pan.Logerror(err)
+			pan.Logerror(err, true)
 		}
 		fmt.Printf("%v", zones)
 
 		for _, element := range oid {
 			err = params.BulkWalk(element, saveCPS)
 			if err != nil {
-				pan.Logerror(err)
+				pan.Logerror(err, true)
 			}
 			fmt.Printf("%v", cps)
 			//Saving CPS info to the respective zone name using CSV

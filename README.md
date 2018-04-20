@@ -36,7 +36,17 @@ Running the scripts
     > Flags:
       -h, --help   help for pan
 
+___
 
+current structure:
+
+>run:
+    ssh
+    cps
+    
+>api:
+    keygen
+    
 ___
 Available scripts:
 

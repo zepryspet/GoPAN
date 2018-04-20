@@ -29,13 +29,13 @@ func Send(fqdn string, user string, pass string) {
 		Auth:            []ssh.AuthMethod{ssh.Password(pass)},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	})
-	pan.Logerror(err)
+	pan.Logerror(err, true)
 	session, err := sshClt.NewSession()
-	pan.Logerror(err)
+	pan.Logerror(err, true)
 	sshOut, err := session.StdoutPipe()
-	pan.Logerror(err)
+	pan.Logerror(err, true)
 	sshIn, err := session.StdinPipe()
-	pan.Logerror(err)
+	pan.Logerror(err, true)
 
 	// Set up terminal modes
 	modes := ssh.TerminalModes{
