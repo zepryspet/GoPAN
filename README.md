@@ -74,4 +74,4 @@ Available scripts:
 
     >requesting categories for urls inside a text file
     
-    >./api api urlcat -i firewall-ip -p password -u username -w websites.txt -f
+    >./pan api urlcat -i firewall-ip -p password -u username -w websites.txt -f
