@@ -18,6 +18,7 @@ func Request (fqdn string, apiKey string, urls string, isFile bool) {
     q.Add("type", "op")
     q.Add("key", apiKey)
     
+    //if it's a file read the file and send the commands line by line
     if isFile{
         file, err := os.Open(urls)
         if err != nil {
@@ -29,7 +30,7 @@ func Request (fqdn string, apiKey string, urls string, isFile bool) {
         for scanner.Scan() {
             category = rcategory (fqdn, q, scanner.Text())
             //Writing to a csv file. creates one if it doesn't exist, appends if it does.
-            pan.Wlog("categories.csv", scanner.Text() + "," + category, true)
+            pan.Wlog("categories.csv", strings.TrimSpace(scanner.Text()) + "," + category, true)
         }
         if err := scanner.Err(); err != nil {
             pan.Logerror(err, true)

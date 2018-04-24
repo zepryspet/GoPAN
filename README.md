@@ -41,11 +41,11 @@ ___
 current structure:
 
 >run:
-    ssh
-    cps
-    
+>    ssh
+>    cps
+>    
 >api:
-    keygen
+>    keygen
     
 ___
 Available scripts:
@@ -62,3 +62,13 @@ Available scripts:
     Sent a batch of commands to a firewall or panorama using SSH. The input accepts either a filename in the current working directory containing a set of commands or a single command. It can send either configuration commands or operational command but no both. The commands can be once or every X minutes.
 
     Example:
+    
+3. urlcat.
+    Script that request the url category for a single website or for multiple websites stored in a clear text file, the output will be saved in a csv file within the same folder named "categories.csv"
+
+    Examples:
+    >requesting a category for a single website
+    >./pan api urlcat -i firewall-ip -p password -u username -w www.facebook.com 
+    >
+    >requesting categories for urls inside a text file
+    >./api urlcat -i firewall-ip -p password -u username -w websites.txt -f
