@@ -38,7 +38,7 @@ Running the scripts
 
 ___
 
-current structure:
+current script structure:
 
 run:
 
@@ -48,7 +48,7 @@ run:
 
 api:
 
-    keygen
+    urlcat
     
 ___
 Available scripts:
