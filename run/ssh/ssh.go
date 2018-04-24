@@ -13,16 +13,7 @@ import (
 )
 
 func Send(fqdn string, user string, pass string) {
-	//Defining main variables
-	//user := "admin"
-	//pass := "admin"
-	//pan.Keygen(user, pass, fqdn)
-	//fqdn := "172.16.1.1"
-	//community := "public"
-	//minutes := 1
-	//cps.Snmpgen(fqdn, community, minutes)
-	//user := "admin"
-	//pass := "admin"
+
 	// Start up ssh process
 	sshClt, err := ssh.Dial("tcp", fqdn+":22", &ssh.ClientConfig{
 		User:            user,

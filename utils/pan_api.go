@@ -12,10 +12,17 @@ import (
     "strconv"
 )
 
-//Function to generate
+//Function to generate an API key
 func Keygen(fqdn string, user string, pass string) string {
+    
     apiKey := ""
-
+    
+    //Validating that all login flags are set
+    if (fqdn == "" || user =="" || pass=="") {
+        e := "Error: required flags \"ip-address\", \"password\" or \"user\" not set"
+        println (e)
+        Logerror(errors.New(e), true)
+    } 
 	//Defining secondary variables
 	req, err := url.Parse("https://" + fqdn + "/api/?")
 	if err != nil {
@@ -101,23 +108,13 @@ func HttpValidate (req string, debug bool) ([]byte , error) {
 		doc := etree.NewDocument()
 		doc.ReadFromBytes(body)
         //extraccting the response status from the http response and comparing it with "success"
-        status := doc.FindElement("./*").Attr[0].Value
+        status := doc.FindElement("./*").SelectAttrValue("status", "unknown")
         if status != "success"{
             problem = errors.New("error with HTTP request:\t" + req + "\nreceived status " + status +  " and response :\t" + string(body))
-            
         }
 	}else {
         problem = errors.New("error with HTTP request:\t" + req + "\nreceived status code:\t" + strconv.Itoa(resp.StatusCode))
 	}
 
     return body,problem
-}
-
-//Validate that the user provided username, password and fqdn
-func Flagcheck(fqdn string, user string, pass string) {
-    if (fqdn == "" || user =="" || pass=="") {
-        e := "Error: required flags \"ip-address\", \"password\" or \"user\" not set"
-        println (e)
-        Logerror(errors.New(e), true)
-    } 
 }

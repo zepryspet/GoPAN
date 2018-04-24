@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
     "GoPAN/run/ssh"
     "GoPAN/run/cps"
+    "GoPAN/api/urlcat"
     "GoPAN/utils"
 )
 
@@ -15,6 +16,7 @@ func main() {
     var community string
     var pass string
     var user string
+    var command string
     var minutes int
     var flag1 bool
     
@@ -87,7 +89,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 			fmt.Println("Print: " + strings.Join(args, " "))
 		},
 	}
-   //Adding fqdn, username and password as required flags
+   //Adding fqdn, username and password as required flags for all api commands
     cmdApi.PersistentFlags().StringVarP(&firewallIP, "ip-address", "i", "", "firewall IP address or FQDN")
     cmdApi.PersistentFlags().StringVarP(&user, "user", "u", "", "firewall username")
     cmdApi.PersistentFlags().StringVarP(&pass, "password", "p", "", "firewall password")
@@ -98,10 +100,22 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 		Long: "Generate an API key for the username provided",
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-            pan.Flagcheck(firewallIP, user, pass)
             fmt.Println(pan.Keygen(firewallIP, user, pass))
 		},
 	}
+    
+    var cmdURL = &cobra.Command{
+        Use:	 "urlcat",
+		Short: "Get a url category for a website or from a file with website",
+		Long: "Generate an API key for the username provided",
+		Args: cobra.MinimumNArgs(0),
+		Run: func(cmd *cobra.Command, args []string) {
+            urlcat.Request(firewallIP, pan.Keygen(firewallIP, user, pass), command, flag1)
+		},
+	}
+    cmdURL.Flags().StringVarP(&command, "website", "w", "", "url or filename with urls")
+	cmdURL.MarkFlagRequired("website")
+    cmdURL.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag to true if you're have the urls in a text file")
     
     //Setting command and subcommand structure
 	var rootCmd = &cobra.Command{Use: "pan"}
@@ -112,5 +126,6 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
     cmdScript.AddCommand(cmdSSH)
     //Api sub-commands
     cmdApi.AddCommand(cmdKey)
+    cmdApi.AddCommand(cmdURL)
 	rootCmd.Execute()
 }
