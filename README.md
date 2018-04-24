@@ -40,15 +40,15 @@ ___
 
 current structure:
 
->run:
+run:
 
->    ssh
+    ssh
 
->    cps
+    cps
 
->api:
+api:
 
->    keygen
+    keygen
     
 ___
 Available scripts:
