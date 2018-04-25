@@ -62,19 +62,30 @@ Available scripts:
 
 2. ssh.
 
-    Sent a batch of commands to a firewall or panorama using SSH. The input accepts either a filename in the current working directory containing a set of commands or a single command. It can send either configuration commands or operational command but no both. The commands can be once or every X minutes.
+    Sent a batch of commands to a firewall or panorama using SSH. The input accepts either a filename in the current working directory containing a set of commands or a single command. It can send either configuration commands or operational commands (default) but no both. The commands can be run once or every X minutes.
 
-    Example:
+    Examples:
+    
+    running "show clock" once on the endpoint every 10 seconds (-t 10)
+    >./pan run ssh -i firewall-ip -p password -u username -r 'show clock' -t 10
+    
+    running "run show system info" on the endpoint in config mode(used run because the firewall will be in config mode but could be any configuration command)
+    >./pan run ssh -i firewall-ip -p password -u username -r 'run show system info' -c
+    
+    Running commands from "commands.txt" (-f) in configuration mode (-c)
+    >./pan run ssh -i firewall-ip -p password -u username -r commands.txt -fc
+    
     
 3. urlcat.
 
     Script that request the url category for a single website or for multiple websites stored in a clear text file, the output will be saved in a csv file within the same folder named "categories.csv"
 
     Examples:
-    >requesting a category for a single website
+    
+    requesting a category for a single website
     
     >./pan api urlcat -i firewall-ip -p password -u username -w www.facebook.com 
 
-    >requesting categories for urls inside a text file
+    requesting categories for urls inside a text file
     
     >./pan api urlcat -i firewall-ip -p password -u username -w websites.txt -f

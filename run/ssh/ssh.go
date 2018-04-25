@@ -1,18 +1,17 @@
 package panssh
 
 import (
-	//"swisspan/cps"
-	//"bytes"
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"io"
-	"log"
 	"strings"
 	"GoPAN/utils"
 	"time"
+    "bufio"
+    "os"
 )
 
-func Send(fqdn string, user string, pass string) {
+func Send(fqdn string, user string, pass string, command string, isFile bool, isConfig bool) {
 
 	// Start up ssh process
 	sshClt, err := ssh.Dial("tcp", fqdn+":22", &ssh.ClientConfig{
@@ -36,32 +35,80 @@ func Send(fqdn string, user string, pass string) {
 	}
 	// Request pseudo terminal
 	if err := session.RequestPty("xterm", 40, 80, modes); err != nil {
-		log.Fatal("request for pseudo terminal failed: ", err)
+        pan.Wlog ("request for pseudo terminal failed: ", "error.txt", false)
+		pan.Logerror(err, true)
 	}
 	// Start remote shell
 	if err := session.Shell(); err != nil {
-		log.Fatal("failed to start shell: ", err)
+        pan.Wlog ("request for remote shell failed: ", "error.txt", false)
+		pan.Logerror(err, true)
 	}
 	//wait for banner
 	// Once a Session is created, you can execute a single command on
 	// the remote side using the Run method.
 
-	cmdSend(sshOut, sshIn, "show system info", false, false, 20)
+	cmdSend(sshOut, sshIn, command, isFile, isConfig, 20)
 	session.Close()
 }
 
-func cmdSend(sshOut io.Reader, sshIn io.WriteCloser, cmd string, isfile bool, isconfig bool, timeout int) {
-	readBuff(">", sshOut, timeout)
+func cmdSend(sshOut io.Reader, sshIn io.WriteCloser, cmd string, isFile bool, isConfig bool, timeout int) {
+    //setting up the initial prompt
+    prompt := ">"
+	readBuff(prompt, sshOut, timeout)
+    //disabling the CLI pager to avoid having to tab on large outputs
 	if _, err := writeBuff("set cli pager off", sshIn); err != nil {
-		log.Fatal("Failed to run: %s", err)
+		pan.Logerror(err, true)
 	}
-	readBuff(">", sshOut, timeout)
-	if _, err := writeBuff(cmd, sshIn); err != nil {
-		log.Fatal("Failed to run: %s", err)
-	}
-	readBuff(">", sshOut, timeout)
+	readBuff(prompt, sshOut, timeout)
+    
+    //verifying if the commands need to be run in config mode
+    if isConfig{
+        //changing the prompt to bash as due config mode
+        prompt = "#"
+        //Sending configuration
+        if _, err := writeBuff("configure", sshIn); err != nil {
+            pan.Logerror(err, true)
+        }
+        readBuff(prompt, sshOut, timeout)
+    }
+    
+    //Sending the command (s) to the endpoints
+    
+    //checking if it's a file or a single command
+    if isFile{
+        file, err := os.Open(cmd)
+        if err != nil {
+            pan.Logerror(err, true)
+        }
+        defer file.Close()
+
+        scanner := bufio.NewScanner(file)
+        for scanner.Scan() {
+            //removing empty spaces
+            newline := strings.TrimSpace(scanner.Text())
+            if _, err := writeBuff(newline, sshIn); err != nil {
+                pan.Logerror(err, true)
+            }
+            readBuff(prompt, sshOut, timeout)
+        }
+        if err := scanner.Err(); err != nil {
+            pan.Logerror(err, true)
+        }
+    } else{
+        if _, err := writeBuff(cmd, sshIn); err != nil {
+            pan.Logerror(err, true)
+        }
+        readBuff(prompt, sshOut, timeout)
+    }
+    //Exiting from config mode
+    if isConfig{
+        if _, err := writeBuff("exit", sshIn); err != nil {
+		pan.Logerror(err, true)
+	   }
+    }
+    //Exiting from operational mode
 	if _, err := writeBuff("exit", sshIn); err != nil {
-		log.Fatal("Failed to run: %s", err)
+		pan.Logerror(err, true)
 	}
 }
 

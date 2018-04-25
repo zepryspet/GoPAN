@@ -8,6 +8,7 @@ import (
     "GoPAN/run/cps"
     "GoPAN/api/urlcat"
     "GoPAN/utils"
+    "time"
 )
 
 func main() {
@@ -18,7 +19,9 @@ func main() {
     var user string
     var command string
     var minutes int
+    var seconds int
     var flag1 bool
+    var flag2 bool
     
     //"Run" top command section
     //
@@ -62,9 +65,15 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
         Either one time or in an loop`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-				fmt.Println("firewall IP: " + firewallIP)
-                fmt.Printf("%t\n", flag1)
-                panssh.Send(firewallIP, user, pass)
+            if seconds == 0 {
+                panssh.Send(firewallIP, user, pass, command, flag1, flag2)
+            }   else{
+                for true{
+                    panssh.Send(firewallIP, user, pass, command, flag1, flag2)
+                    time.Sleep(time.Duration(seconds)*time.Second)
+                }
+            } 
+            
 		},
 	}
     //missing timeout, filename or command
@@ -74,7 +83,11 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 	cmdSSH.MarkFlagRequired("user")
     cmdSSH.Flags().StringVarP(&pass, "password", "p", "", "firewall password")
 	cmdSSH.MarkFlagRequired("password")
-    cmdSSH.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag to true if you're sending commands in a text file")
+    cmdSSH.Flags().StringVarP(&command, "command", "r", "", "ssh command or file with commands to run on the firewall")
+	cmdSSH.MarkFlagRequired("password")
+    cmdSSH.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag if you're sending commands in a text file")
+    cmdSSH.Flags().BoolVarP(&flag2, "isConfig", "c", false , "set this flag if you're sending configuration commands")
+    cmdSSH.Flags().IntVarP(&seconds, "times", "t", 0 , "time in seconds to repeat the commands indefinetily")
 
 
     //"api" subtop command section
