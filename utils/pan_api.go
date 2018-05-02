@@ -10,6 +10,7 @@ import (
 	"time"
     "errors"
     "strconv"
+    "strings"
 )
 
 //Function to generate an API key
@@ -117,4 +118,35 @@ func HttpValidate (req string, debug bool) ([]byte , error) {
 	}
 
     return body,problem
+}
+
+//Function to generate an XML api call from a cli command
+
+func CmdGen (cmd string) string {
+    xml := ""
+    //Creating array with the individual words
+    words := strings.Fields(cmd)
+    //Creating xml cmd section
+    for _, element := range words {
+        if strings.HasPrefix(element, "n_"){
+            element = strings.TrimPrefix(element, "n_")
+            xml = xml + "<entry name = '" + element + "'>"   
+        }else if strings.HasPrefix(element, "t_"){
+            element = strings.TrimPrefix(element, "t_")
+            xml = xml + element
+        }else{
+            xml = xml + "<" + element + ">"   
+        }
+    }
+    //Closing the xml 
+    for i := len(words)-1; i >= 0; i--{
+        if strings.HasPrefix(words[i], "n_"){
+            xml = xml + "</entry>"   
+        }else if strings.HasPrefix(words[i], "t_"){
+            //Do nothing
+        }else{
+            xml = xml + "</" + words[i] + ">"   
+        }
+    }
+    return xml
 }

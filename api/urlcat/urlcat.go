@@ -28,7 +28,7 @@ func Request (fqdn string, apiKey string, urls string, isFile bool) {
 
         scanner := bufio.NewScanner(file)
         for scanner.Scan() {
-            category = rcategory (fqdn, q, strings.TrimSpace(scanner.Text())
+            category = rcategory (fqdn, q, strings.TrimSpace(scanner.Text()))
             //Writing to a csv file. creates one if it doesn't exist, appends if it does.
             pan.Wlog("categories.csv", strings.TrimSpace(scanner.Text()) + "," + category, true)
         }

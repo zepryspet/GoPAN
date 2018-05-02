@@ -7,6 +7,7 @@ import (
     "GoPAN/run/ssh"
     "GoPAN/run/cps"
     "GoPAN/api/urlcat"
+    "GoPAN/api/cutover"
     "GoPAN/utils"
     "time"
 )
@@ -90,7 +91,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
     cmdSSH.Flags().IntVarP(&seconds, "times", "t", 0 , "time in seconds to repeat the commands indefinetily")
 
 
-    //"api" subtop command section
+    //"api" top command section
     //
 	var cmdApi = &cobra.Command{
 		Use:	 "api",
@@ -102,11 +103,12 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 			fmt.Println("Print: " + strings.Join(args, " "))
 		},
 	}
-   //Adding fqdn, username and password as required flags for all api commands
+   //Adding fqdn, username and password as persistend flags for all api sub-commands
     cmdApi.PersistentFlags().StringVarP(&firewallIP, "ip-address", "i", "", "firewall IP address or FQDN")
     cmdApi.PersistentFlags().StringVarP(&user, "user", "u", "", "firewall username")
     cmdApi.PersistentFlags().StringVarP(&pass, "password", "p", "", "firewall password")
 
+    //"api keygen" command to generate an API key
     var cmdKey = &cobra.Command{
         Use:	 "keygen",
 		Short: "generate an API key",
@@ -117,6 +119,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 		},
 	}
     
+    //"api urlcat" command to check url categories
     var cmdURL = &cobra.Command{
         Use:	 "urlcat",
 		Short: "Get a url category for a website or from a file with website",
@@ -130,6 +133,17 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 	cmdURL.MarkFlagRequired("website")
     cmdURL.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag to true if you're have the urls in a text file")
     
+    //"api cutover" basic checks during maintenance windows.
+    var cmdCut = &cobra.Command{
+        Use:	 "cutover",
+        Short: "Checklist for common issues during cutovers",
+        Long: "Check incomplete arps, duplex mismatch, send GARPs on all interfaces, global counters, CRCs and enabled interfaces in down state",
+        Args: cobra.MinimumNArgs(0),
+        Run: func(cmd *cobra.Command, args []string) {
+            cutover.Check(firewallIP,user, pass)
+        },
+	}
+    
     //Setting command and subcommand structure
 	var rootCmd = &cobra.Command{Use: "pan"}
 	rootCmd.AddCommand(cmdScript)
@@ -140,5 +154,6 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
     //Api sub-commands
     cmdApi.AddCommand(cmdKey)
     cmdApi.AddCommand(cmdURL)
+    cmdApi.AddCommand(cmdCut)
 	rootCmd.Execute()
 }
