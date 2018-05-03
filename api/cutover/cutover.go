@@ -6,6 +6,7 @@ import(
     "net/url"
     "strings"
     "os"
+    "regexp"
 )
 
 func Check (fqdn string, user string, pass string) {
@@ -104,6 +105,25 @@ func Check (fqdn string, user string, pass string) {
     ///////////////////
     //Check CRCs 
     //
+    //Generating HTTP req.
+    cmd = pan.CmdGen("show system state filter-pretty t_sys.*")
+    q.Set("cmd", cmd )
+    req.RawQuery = q.Encode()
+    //Sending the query to the firewall
+    resp, err = pan.HttpValidate(req.String(), false)
+    pan.Logerror(err, true)
+    r := regexp.MustCompile(`sys.(s\d.p\d).detail:\s{\s[^}]*crc`)
+    ports := r.FindAllStringSubmatch(string(resp), -1)
+    for i := 0; i < len(ports); i++ {
+        index := strings.Split(ports[i][1], ".")
+        slot := strings.TrimPrefix(index[0], "s")
+        port := strings.TrimPrefix(index[1], "p")
+        message = "CRCs detected in ethernet" + slot + "/" + port
+        println(message)
+        pan.Wlog ( "output.txt",message, true)
+    }
+    //parsing response for hardware status
+    //Regex check the first capturing group ''
     
 }
     
