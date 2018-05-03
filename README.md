@@ -61,8 +61,10 @@ II. Running the scripts
       pan [command]
 
     >Available Commands:
+      api         scripts using the api calls
       help        Help about any command
-      run         Pre-built scripts to collect and process firewall data
+      run         Pre-built scripts to collect and process firewall data using non-api methods like SNMP or SSH
+
 
     > Flags:
       -h, --help   help for pan
@@ -80,6 +82,10 @@ run:
 api:
 
     urlcat
+    
+    cutover
+    
+    keygen
     
 ___
 IV. Script details:
