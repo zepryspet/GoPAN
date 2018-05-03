@@ -1,29 +1,60 @@
 Non-oficcial script set to deal with Palo Alto networks products.
 
 ___
-Installation steps (in case you don't want to dowload the precompiled binaries or your system isn't MAC or windowsx64):
+I (a) Compilying the binary. skip this step if you want to download the precompiled binary files.
 
 1. Install go for your system.
 >https://golang.org/doc/install
 
-2. Download the script 
+2. Download the script source code 
 > go get github.com/zepryspet/GoPAN
 
 3. Change directory to the dowloaded folder
 > cd $HOME/go/src/github.com/zepryspet/GoPAN
 
-4. Generate the binary files (this option is not needed since you can also run the script without compiling it). This will generate the binary in the current directory
-> go build pan.go
+4. Generate the binary file (this option is not needed since you can also run the script without compiling it). This will generate the binary in the current directory
+> go build
+
+5. run the script
+>./GoPAN
+___
+
+I (b) Downloading the precompiled binary scripts:
+
+For MAC
+
+>curl -L https://github.com/zepryspet/GoPAN/raw/master/binaries/mac/GoPAN -o GoPAN
+
+>chmod 755 GoPAN
+
+>./GoPAN 
+
+For Windows x32
+
+> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows32bit/GoPAN
+
+> open cmd in the dowload directory
+
+>./GoPAN 
+
+For Windows x64
+
+> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows64bit/GoPAN
+
+> open cmd in the dowload directory
+
+>./GoPAN
 
 
-Running the scripts
+___
+II. Running the scripts
 
 1. Change the directory where the binary file is stored.
 > cd $HOME/go/src/github.com/zepryspet/GoPAN
 
 2. Run the script to get help
 
-> ./pan
+> ./GoPAN
     
     
     >Usage:
@@ -38,7 +69,7 @@ Running the scripts
 
 ___
 
-current script structure:
+III. Current script structure:
 
 run:
 
@@ -51,14 +82,14 @@ api:
     urlcat
     
 ___
-Available scripts:
+IV. Script details:
 
 1. cps. 
 
     Getting the CPS per zone in palo alto firewall using SNMP (requieres PAN-OS 8.0+) the csv files will be saved in the working directory. You usually run it for a week or 2 and then open the csv to get the max CPS per zone and set the alert to 1.2x and the block rate to 1.5x
 
     Example
-    > ./pan run cps -c snmp-community -i firewall-ip
+    > ./GoPAN run cps -c snmp-community -i firewall-ip
 
 2. ssh.
 
@@ -67,13 +98,13 @@ Available scripts:
     Examples:
     
     running "show clock" once on the endpoint every 10 seconds (-t 10)
-    >./pan run ssh -i firewall-ip -p password -u username -r 'show clock' -t 10
+    >./GoPAN run ssh -i firewall-ip -p password -u username -r 'show clock' -t 10
     
     running "run show system info" on the endpoint in config mode(used run because the firewall will be in config mode but could be any configuration command)
-    >./pan run ssh -i firewall-ip -p password -u username -r 'run show system info' -c
+    >./GoPAN run ssh -i firewall-ip -p password -u username -r 'run show system info' -c
     
     Running commands from "commands.txt" (-f) in configuration mode (-c)
-    >./pan run ssh -i firewall-ip -p password -u username -r commands.txt -fc
+    >./GoPAN run ssh -i firewall-ip -p password -u username -r commands.txt -fc
     
     
 3. urlcat.
@@ -84,8 +115,20 @@ Available scripts:
     
     requesting a category for a single website
     
-    >./pan api urlcat -i firewall-ip -p password -u username -w www.facebook.com 
+    >./GoPAN api urlcat -i firewall-ip -p password -u username -w www.facebook.com 
 
     requesting categories for urls inside a text file
     
-    >./pan api urlcat -i firewall-ip -p password -u username -w websites.txt -f
+    >./GoPAN api urlcat -i firewall-ip -p password -u username -w websites.txt -f
+    
+4. cutover
+
+    Useful scripts for maintenance windows. It checks: incomplete mac addresses, interface status, speed and duplex information and send gratuitous ARPs on all interfaces.
+    
+    >./GoPAN api cutover -i firewall-ip -p password -u username
+    
+5. Keygen
+
+    Generates and prints an API key from a palo alto firewall
+    
+    >./GoPAN api keygen -i firewall-ip -p password -u username
