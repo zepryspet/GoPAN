@@ -1,7 +1,7 @@
 Non-oficcial script set to deal with Palo Alto networks products.
 
 ___
-I (a) Compilying the binary. skip this step if you want to download the precompiled binary files.
+I(a). Compilying the binary. skip this step if you want to download the precompiled binary files.
 
 1. Install go for your system.
 >https://golang.org/doc/install
@@ -19,7 +19,7 @@ I (a) Compilying the binary. skip this step if you want to download the precompi
 >./GoPAN
 ___
 
-I (b) Downloading the precompiled binary scripts:
+I(b). Downloading the precompiled binary scripts:
 
 For MAC
 
