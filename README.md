@@ -27,23 +27,23 @@ For MAC
 
 >chmod 755 GoPAN
 
->./GoPAN 
+>./GoPAN -h
 
 For Windows x32
 
-> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows32bit/GoPAN
+> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows32bit/GoPAN.exe
 
 > open cmd in the dowload directory
 
->./GoPAN 
+>GoPAN.exe -h 
 
 For Windows x64
 
-> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows64bit/GoPAN
+> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows64bit/GoPAN.exe
 
 > open cmd in the dowload directory
 
->./GoPAN
+>GoPAN.exe -h
 
 
 ___
