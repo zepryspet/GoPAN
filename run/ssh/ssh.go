@@ -5,7 +5,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"io"
 	"strings"
-	"GoPAN/utils"
+	"github.com/zepryspet/GoPAN/utils"
 	"time"
     "bufio"
     "os"

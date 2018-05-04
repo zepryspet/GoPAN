@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"GoPAN/utils"
+	"github.com/zepryspet/GoPAN/utils"
 	"time"
 )
 

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 	"github.com/spf13/cobra"
-    "GoPAN/run/ssh"
-    "GoPAN/run/cps"
-    "GoPAN/api/urlcat"
-    "GoPAN/api/cutover"
-    "GoPAN/utils"
+    "github.com/zepryspet/GoPAN/run/ssh"
+    "github.com/zepryspet/GoPAN/run/cps"
+    "github.com/zepryspet/GoPAN/api/urlcat"
+    "github.com/zepryspet/GoPAN/api/cutover"
+    "github.com/zepryspet/GoPAN/utils"
     "time"
 )
 

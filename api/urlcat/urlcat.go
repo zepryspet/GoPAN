@@ -1,7 +1,7 @@
 package urlcat
 
 import (
-    "GoPAN/utils"
+    "github.com/zepryspet/GoPAN/utils"
     "net/url"
     "github.com/beevik/etree"
     "strings"

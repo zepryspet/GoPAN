@@ -1,7 +1,7 @@
 package cutover
 import(
-    "GoPAN/utils"
-    "GoPAN/run/ssh"
+    "github.com/zepryspet/GoPAN/utils"
+    "github.com/zepryspet/GoPAN/run/ssh"
     "github.com/beevik/etree"
     "net/url"
     "strings"
