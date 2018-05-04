@@ -31,7 +31,7 @@ For MAC
 
 For Windows x32
 
-> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows32bit/GoPAN
+> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows32bit/GoPAN.exe
 
 > open cmd in the dowload directory
 
@@ -39,7 +39,7 @@ For Windows x32
 
 For Windows x64
 
-> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows64bit/GoPAN
+> dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows64bit/GoPAN.exe
 
 > open cmd in the dowload directory
 
