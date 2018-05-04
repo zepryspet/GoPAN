@@ -2,11 +2,13 @@ package cutover
 import(
     "github.com/zepryspet/GoPAN/utils"
     "github.com/zepryspet/GoPAN/run/ssh"
+    "github.com/zepryspet/GoPAN/http"
     "github.com/beevik/etree"
     "net/url"
     "strings"
     "os"
     "regexp"
+    "time"
 )
 
 func Check (fqdn string, user string, pass string) {
@@ -36,6 +38,31 @@ func Check (fqdn string, user string, pass string) {
             println ("incomplete arp found on: " + intf)
         }  
     }
+    ///////////////////
+    //Check CRCs 
+    //
+    //Generating HTTP req.
+    cmd = pan.CmdGen("show system state filter-pretty t_sys.*")
+    q.Set("cmd", cmd )
+    req.RawQuery = q.Encode()
+    //Sending the query to the firewall
+    resp, err = pan.HttpValidate(req.String(), false)
+    pan.Logerror(err, true)
+    //Regex will check the first capturing group that will define the physical por as 'sX.pY'
+    r := regexp.MustCompile(`sys.(s\d.p\d).detail:\s{\s[^}]*crc`)
+    ports := r.FindAllStringSubmatch(string(resp), -1)
+    for i := 0; i < len(ports); i++ {
+        index := strings.Split(ports[i][1], ".")
+        slot := strings.TrimPrefix(index[0], "s")
+        port := strings.TrimPrefix(index[1], "p")
+        message = "CRCs detected in ethernet" + slot + "/" + port
+        println(message)
+        pan.Wlog ( "output.txt",message, true)
+    }
+    /////////////////////////////////
+    ///Check global Counters
+    gcCheck(fqdn, apikey)
+    
     /////////////////////////////////
     //Verify they interfaces aren't running either 100/10 Mbps or half duplex or are down.
     //Generating HTTP req.
@@ -101,29 +128,34 @@ func Check (fqdn string, user string, pass string) {
     //Sending SSH commands
     println ("sending GARPs using SSH please wait...")
     panssh.Send(fqdn, user, pass, "garp.txt" , true, false)
-    
-    ///////////////////
-    //Check CRCs 
-    //
-    //Generating HTTP req.
-    cmd = pan.CmdGen("show system state filter-pretty t_sys.*")
-    q.Set("cmd", cmd )
-    req.RawQuery = q.Encode()
-    //Sending the query to the firewall
-    resp, err = pan.HttpValidate(req.String(), false)
-    pan.Logerror(err, true)
-    r := regexp.MustCompile(`sys.(s\d.p\d).detail:\s{\s[^}]*crc`)
-    ports := r.FindAllStringSubmatch(string(resp), -1)
-    for i := 0; i < len(ports); i++ {
-        index := strings.Split(ports[i][1], ".")
-        slot := strings.TrimPrefix(index[0], "s")
-        port := strings.TrimPrefix(index[1], "p")
-        message = "CRCs detected in ethernet" + slot + "/" + port
-        println(message)
-        pan.Wlog ( "output.txt",message, true)
-    }
-    //parsing response for hardware status
-    //Regex check the first capturing group ''
+
     
 }
+
+//Function to check Global counters for know things
+func gcCheck(fqdn string, api string){
+    //Global counters and their possible causes
+    counters := map[string]string{ "flow_fwd_zonechange":"Assymetric routing",
+                                  "flow_rcv_dot1q_tag_err":"Received traffic on a non configured vlan"};
+    //Map to store the base global counter value during the first call.
+    value := make(map[string]int)
+    //Delay in seconds to calculate the rate
+    delay := 5
+    //Max rate to avoid false positives. Global counter of 1 or 5 lps could be meaningless
+    maxrate := 20
+    for counter := range counters{
+        value[counter] = show.GlobalCounter(fqdn, api, counter)
+    }
+    time.Sleep (time.Duration(delay)*time.Second)
+    for counter := range counters{
+        tmp := show.GlobalCounter(fqdn, api, counter)
+        //Calculating rate and comparing it with the max rate expected
+        if ((tmp-value[counter])/delay) > maxrate{
+            message :="packet rate exceeding threshold for global counter " + counter + " this could be because of the following reason: " + counters[counter]
+            println (message) 
+            pan.Wlog ( "output.txt",message, true)
+        }
+    }
+}
+
     
