@@ -27,7 +27,7 @@ For MAC
 
 >chmod 755 GoPAN
 
->./GoPAN 
+>./GoPAN -h
 
 For Windows x32
 
@@ -35,7 +35,7 @@ For Windows x32
 
 > open cmd in the dowload directory
 
->./GoPAN 
+>GoPAN.exe -h 
 
 For Windows x64
 
@@ -43,7 +43,7 @@ For Windows x64
 
 > open cmd in the dowload directory
 
->./GoPAN
+>GoPAN.exe -h
 
 
 ___
