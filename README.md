@@ -29,6 +29,7 @@ For MAC
 
 >./GoPAN -h
 
+
 For Windows x32
 
 > dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows32bit/GoPAN.exe
@@ -37,6 +38,7 @@ For Windows x32
 
 >GoPAN.exe -h 
 
+
 For Windows x64
 
 > dowload https://github.com/zepryspet/GoPAN/raw/master/binaries/windows64bit/GoPAN.exe
@@ -44,6 +46,15 @@ For Windows x64
 > open cmd in the dowload directory
 
 >GoPAN.exe -h
+
+
+For Linux x64 (tested on ubuntu 16)
+
+>curl -L https://github.com/zepryspet/GoPAN/raw/master/binaries/linux64bit/GoPAN -o GoPAN
+
+>chmod 755 GoPAN
+
+>./GoPAN -h
 
 
 ___
