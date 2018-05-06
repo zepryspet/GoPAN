@@ -132,7 +132,7 @@ func Check (fqdn string, user string, pass string) {
     
 }
 
-//Function to check Global counters for know things
+//Function to check Global counters for know issues
 func gcCheck(fqdn string, api string){
     //Global counters and their possible causes
     counters := map[string]string{ "flow_fwd_zonechange":"Assymetric routing",
