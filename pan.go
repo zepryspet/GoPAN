@@ -8,6 +8,7 @@ import (
     "github.com/zepryspet/GoPAN/run/cps"
     "github.com/zepryspet/GoPAN/api/urlcat"
     "github.com/zepryspet/GoPAN/api/cutover"
+    "github.com/zepryspet/GoPAN/api/threat"
     "github.com/zepryspet/GoPAN/utils"
     "time"
 )
@@ -144,6 +145,17 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
         },
 	}
     
+    //"api threat" things related to the threat db
+    var cmdThreat = &cobra.Command{
+        Use:	 "threat",
+        Short: "Export the threat Database",
+        Long: "Subcommand that export the current threat DB to csv for easier parsing",
+        Args: cobra.MinimumNArgs(0),
+        Run: func(cmd *cobra.Command, args []string) {
+            threat.Export(firewallIP,user, pass)
+        },
+	}
+    
     //Setting command and subcommand structure
 	var rootCmd = &cobra.Command{Use: "pan"}
 	rootCmd.AddCommand(cmdScript)
@@ -155,5 +167,6 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
     cmdApi.AddCommand(cmdKey)
     cmdApi.AddCommand(cmdURL)
     cmdApi.AddCommand(cmdCut)
+    cmdApi.AddCommand(cmdThreat)
 	rootCmd.Execute()
 }
