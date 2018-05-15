@@ -149,3 +149,9 @@ IV. Script details:
     Generates and prints an API key from a palo alto firewall
     
     >./GoPAN api keygen -i firewall-ip -p password -u username
+    
+6. Threat
+
+    Exports the firewall threat database from a firewall into excel. Including threat ID, name, description, type, severity and CVE.
+    
+    >./GoPAN api threat -i firewall-ip -p password -u username
