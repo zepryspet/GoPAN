@@ -42,7 +42,7 @@ func Snmpgen(fqdn string, community string, minutes int) {
 		//UDP CPS per zone oID, returns unsigned 32bit integer
 		oid[1] = ".1.3.6.1.4.1.25461.2.1.2.3.10.1.3"
 		//other IP CPS per zone oID, returns unsigned 32bit integer
-		oid[2] = ".1.3.6.1.4.1.25461.2.1.2.3.10.1.3"
+		oid[2] = ".1.3.6.1.4.1.25461.2.1.2.3.10.1.4"
 
 		err = params.BulkWalk(oidZone, saveZone)
 		if err != nil {
