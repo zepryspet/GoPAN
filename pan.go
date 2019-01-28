@@ -20,17 +20,17 @@ func main() {
     var pass string
     var user string
     var command string
-    var minutes int
+    var polltime int
     var seconds int
     var flag1 bool
     var flag2 bool
-    
+
     //"Run" top command section
     //
 	var cmdScript = &cobra.Command{
 		Use:	 "run",
 		Short: "Pre-built scripts to collect and process firewall data using non-api methods like SNMP or SSH",
-		Long: `Set of scripts that will collect and process firewall 
+		Long: `Set of scripts that will collect and process firewall
 information`,
 		Args: cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
@@ -43,12 +43,12 @@ information`,
         Use:	 "cps",
 		Short: "Generate a CPS report from a Palo alto firewall",
 		Long: `Send an SNMP query to get the CPS per zone information
-and generate an excel table with the historical data. 
+and generate an excel table with the historical data.
 Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 				fmt.Println("firewall IP: " + firewallIP)
-                cps.Snmpgen(firewallIP, community, minutes)
+                cps.Snmpgen(firewallIP, community, polltime)
 		},
 	}
     //Seting requiered flags
@@ -56,7 +56,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 	cmdCPS.MarkFlagRequired("ip-address")
     cmdCPS.Flags().StringVarP(&community, "community", "c", "", "SNMPv2 community")
 	cmdCPS.MarkFlagRequired("community")
-    cmdCPS.Flags().IntVarP(&minutes, "minutes", "m", 5, "SNMP interval in minutes to collect LPS")
+    cmdCPS.Flags().IntVarP(&polltime, "polltime", "s", 10, "SNMP interval in polltime to collect LPS")
 
     //"run ssh"
     var cmdSSH = &cobra.Command{
@@ -74,8 +74,8 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
                     panssh.Send(firewallIP, user, pass, command, flag1, flag2)
                     time.Sleep(time.Duration(seconds)*time.Second)
                 }
-            } 
-            
+            }
+
 		},
 	}
     //missing timeout, filename or command
@@ -119,7 +119,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
             fmt.Println(pan.Keygen(firewallIP, user, pass))
 		},
 	}
-    
+
     //"api urlcat" command to check url categories
     var cmdURL = &cobra.Command{
         Use:	 "urlcat",
@@ -133,7 +133,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
     cmdURL.Flags().StringVarP(&command, "website", "w", "", "url or filename with urls")
 	cmdURL.MarkFlagRequired("website")
     cmdURL.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag to true if you're have the urls in a text file")
-    
+
     //"api cutover" basic checks during maintenance windows.
     var cmdCut = &cobra.Command{
         Use:	 "cutover",
@@ -144,7 +144,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
             cutover.Check(firewallIP,user, pass)
         },
 	}
-    
+
     //"api threat" things related to the threat db
     var cmdThreat = &cobra.Command{
         Use:	 "threat",
@@ -155,7 +155,7 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
             threat.Export(firewallIP,user, pass)
         },
 	}
-    
+
     //Setting command and subcommand structure
 	var rootCmd = &cobra.Command{Use: "pan"}
 	rootCmd.AddCommand(cmdScript)

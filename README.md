@@ -6,7 +6,7 @@ I(a). Compilying the binary. skip this step if you want to download the precompi
 1. Install go for your system.
 >https://golang.org/doc/install
 
-2. Download the script source code 
+2. Download the script source code
 > go get github.com/zepryspet/GoPAN
 
 3. Change directory to the dowloaded folder
@@ -36,7 +36,7 @@ For Windows x32
 
 > open cmd in the dowload directory
 
->GoPAN.exe -h 
+>GoPAN.exe -h
 
 
 For Windows x64
@@ -66,8 +66,8 @@ II. Running the scripts
 2. Run the script to get help
 
 > ./GoPAN
-    
-    
+
+
     >Usage:
       pan [command]
 
@@ -93,65 +93,67 @@ run:
 api:
 
     urlcat
-    
+
     cutover
-    
+
     keygen
-    
+
 ___
 IV. Script details:
 
-1. cps. 
+1. cps.
 
     Getting the CPS per zone in palo alto firewall using SNMP (requieres PAN-OS 8.0+) the csv files will be saved in the working directory. You usually run it for a week or 2 and then open the csv to get the max CPS per zone and set the alert to 1.2x and the block rate to 1.5x
 
     Example
     > ./GoPAN run cps -c snmp-community -i firewall-ip
 
+    Note:Default polling time is 10 seconds (SNMP statistics are updated every 10 sec). use "-s" flag to change it if needed
+
 2. ssh.
 
     Sent a batch of commands to a firewall or panorama using SSH. The input accepts either a filename in the current working directory containing a set of commands or a single command. It can send either configuration commands or operational commands (default) but no both. The commands can be run once or every X minutes.
 
     Examples:
-    
+
     running "show clock" once on the endpoint every 10 seconds (-t 10)
     >./GoPAN run ssh -i firewall-ip -p password -u username -r 'show clock' -t 10
-    
+
     running "run show system info" on the endpoint in config mode(used run because the firewall will be in config mode but could be any configuration command)
     >./GoPAN run ssh -i firewall-ip -p password -u username -r 'run show system info' -c
-    
+
     Running commands from "commands.txt" (-f) in configuration mode (-c)
     >./GoPAN run ssh -i firewall-ip -p password -u username -r commands.txt -fc
-    
-    
+
+
 3. urlcat.
 
     Script that request the url category for a single website or for multiple websites stored in a clear text file, the output will be saved in a csv file within the same folder named "categories.csv"
 
     Examples:
-    
+
     requesting a category for a single website
-    
-    >./GoPAN api urlcat -i firewall-ip -p password -u username -w www.facebook.com 
+
+    >./GoPAN api urlcat -i firewall-ip -p password -u username -w www.facebook.com
 
     requesting categories for urls inside a text file
-    
+
     >./GoPAN api urlcat -i firewall-ip -p password -u username -w websites.txt -f
-    
+
 4. cutover
 
     Useful scripts for maintenance windows. It checks: incomplete mac addresses, interface status, speed and duplex information and send gratuitous ARPs on all interfaces.
-    
+
     >./GoPAN api cutover -i firewall-ip -p password -u username
-    
+
 5. Keygen
 
     Generates and prints an API key from a palo alto firewall
-    
+
     >./GoPAN api keygen -i firewall-ip -p password -u username
-    
+
 6. Threat
 
     Exports the firewall threat database from a firewall into excel. Including threat ID, name, description, type, severity and CVE.
-    
+
     >./GoPAN api threat -i firewall-ip -p password -u username

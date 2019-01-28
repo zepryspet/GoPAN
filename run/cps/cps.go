@@ -14,8 +14,8 @@ var zones []string
 var cps []int
 
 //function to SNMP walk on the  CPS OIDs and save the output into text files based on the zone name.
-func Snmpgen(fqdn string, community string, minutes int) {
-	min := time.Duration(60 * minutes)
+func Snmpgen(fqdn string, community string, seconds int) {
+	sec := time.Duration( seconds)
 	loop := true
 	for loop {
 		// Do verbose logging of packets.
@@ -42,7 +42,7 @@ func Snmpgen(fqdn string, community string, minutes int) {
 		//UDP CPS per zone oID, returns unsigned 32bit integer
 		oid[1] = ".1.3.6.1.4.1.25461.2.1.2.3.10.1.3"
 		//other IP CPS per zone oID, returns unsigned 32bit integer
-		oid[2] = ".1.3.6.1.4.1.25461.2.1.2.3.10.1.3"
+		oid[2] = ".1.3.6.1.4.1.25461.2.1.2.3.10.1.4"
 
 		err = params.BulkWalk(oidZone, saveZone)
 		if err != nil {
@@ -69,7 +69,7 @@ func Snmpgen(fqdn string, community string, minutes int) {
 		}
 		//clearing slice for re-use
 		zones = nil
-		time.Sleep(min * time.Second)
+		time.Sleep(sec * time.Second)
 	}
 }
 
