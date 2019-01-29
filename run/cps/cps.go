@@ -63,9 +63,11 @@ func Snmpgen(fqdn string, community string, seconds int) {
 			//Clearing the slice to reuse it for the next SNMP  walk
 			cps = nil
 		}
-		//Ading a breakline at the end of all zone statistic CPS zone files
+		//Ading time and a breakline at the end of all zone statistic CPS zone files
 		for i := range zones {
-			pan.Wlog(zones[i]+".csv", "\n", false)
+			t := time.Now()
+			t.Format(time.RFC3339)
+			pan.Wlog(zones[i]+".csv", t.Format(time.UnixDate) +"\n", false)
 		}
 		//clearing slice for re-use
 		zones = nil
