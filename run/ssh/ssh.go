@@ -7,19 +7,37 @@ import (
 	"strings"
 	"github.com/zepryspet/GoPAN/utils"
 	"time"
-    "bufio"
-    "os"
+  "bufio"
+  "os"
 )
 
 func Send(fqdn string, user string, pass string, command string, isFile bool, isConfig bool) {
 
 	// Start up ssh process
+	//try username pass/first
 	sshClt, err := ssh.Dial("tcp", fqdn+":22", &ssh.ClientConfig{
 		User:            user,
-		Auth:            []ssh.AuthMethod{ssh.Password(pass)},
+		Auth:            []ssh.AuthMethod{
+												ssh.Password(pass),
+												//ssh.KeyboardInteractive(Challenge),
+											},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	})
-	pan.Logerror(err, true)
+
+	//if it fails try interactive keyboard auth type (show the banner and auto ack'd)
+	if err != nil {
+		sshClt, err = ssh.Dial("tcp", fqdn+":22", &ssh.ClientConfig{
+			User:            user,
+			Auth:            []ssh.AuthMethod{
+													//ssh.Password(pass),
+													ssh.KeyboardInteractive(Challenge(pass)),
+												},
+			HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+			BannerCallback:  ssh.BannerDisplayStderr(),
+		})
+		pan.Logerror(err, true)
+	}
+
 	session, err := sshClt.NewSession()
 	pan.Logerror(err, true)
 	sshOut, err := session.StdoutPipe()
@@ -51,6 +69,28 @@ func Send(fqdn string, user string, pass string, command string, isFile bool, is
 	session.Close()
 }
 
+//This is a wrapper function, wraps the original function and passes the password to avoid creating a public variable
+func Challenge (pass string)  func(string, string, []string, []bool) ([]string, error){
+	return func (user, instruction string, questions []string, echos []bool) (answers []string, err error) {
+		answers = make([]string, len(questions))
+		for n, q := range questions {
+			fmt.Printf("%s\n", q)
+			if (q =="Password: "){
+				answers[n] = pass
+				fmt.Printf("Signing In...")
+			}else if (q =="Do you accept and acknowledge the statement above ? (yes/no) : "){
+					answers[n] = "yes"
+					fmt.Printf("yes\nauto acknowdleged banner...\n")
+			}else{
+				reader := bufio.NewReader(os.Stdin)
+				r, _ := reader.ReadString('\n')
+				answers[n] = strings.TrimSpace(r)
+			}
+		}
+		return answers, nil
+	}
+}
+
 func cmdSend(sshOut io.Reader, sshIn io.WriteCloser, cmd string, isFile bool, isConfig bool, timeout int) {
     //setting up the initial prompt
     prompt := ">"
@@ -60,7 +100,7 @@ func cmdSend(sshOut io.Reader, sshIn io.WriteCloser, cmd string, isFile bool, is
 		pan.Logerror(err, true)
 	}
 	readBuff(prompt, sshOut, timeout)
-    
+
     //verifying if the commands need to be run in config mode
     if isConfig{
         //changing the prompt to bash as due config mode
@@ -71,9 +111,9 @@ func cmdSend(sshOut io.Reader, sshIn io.WriteCloser, cmd string, isFile bool, is
         }
         readBuff(prompt, sshOut, timeout)
     }
-    
+
     //Sending the command (s) to the endpoints
-    
+
     //checking if it's a file or a single command
     if isFile{
         file, err := os.Open(cmd)
