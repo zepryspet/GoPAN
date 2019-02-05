@@ -3,7 +3,7 @@ package cps
 import (
 	"fmt"
 	g "github.com/soniah/gosnmp"
-	"log"
+	//"log"
 	"os"
 	"strconv"
 	"github.com/zepryspet/GoPAN/utils"
@@ -25,11 +25,12 @@ func Snmpgen(fqdn string, community string, seconds int) {
 			Port:      uint16(port),
 			Community: community,
 			Version:   g.Version2c,
-			Timeout:   time.Duration(2) * time.Second,
-			Logger:    log.New(os.Stdout, "", 0),
+			Timeout:   time.Duration(10) * time.Second,
+			//Logger:    log.New(os.Stdout, "", 0),
 		}
 		err := params.Connect()
 		if err != nil {
+			fmt.Println("Error establishing SNMP connection to firewall. "+ err.Error())
 			pan.Logerror(err, true)
 		}
 		defer params.Conn.Close()
@@ -46,13 +47,15 @@ func Snmpgen(fqdn string, community string, seconds int) {
 
 		err = params.BulkWalk(oidZone, saveZone)
 		if err != nil {
+			fmt.Println("Error doing SNMP bulkwalk to get zone names. "+ err.Error())
 			pan.Logerror(err, true)
 		}
-		fmt.Printf("%v", zones)
+		fmt.Printf("\n%v", zones)
 
 		for _, element := range oid {
 			err = params.BulkWalk(element, saveCPS)
 			if err != nil {
+				fmt.Println("Error doing SNMP bulkwalk to get CPS. "+ err.Error())
 				pan.Logerror(err, true)
 			}
 			fmt.Printf("%v", cps)
@@ -75,12 +78,13 @@ func Snmpgen(fqdn string, community string, seconds int) {
 }
 
 func saveZone(pdu g.SnmpPDU) error {
-	fmt.Printf("%s = ", pdu.Name)
+	//fmt.Printf("%s = ", pdu.Name)
 	switch pdu.Type {
 	case g.OctetString:
 		b := pdu.Value.([]byte)
 		zones = append(zones, string(b))
 	default:
+		fmt.Println("received zone name NOT as string, please check the OIDs for CPS zone names")
 		pan.Wlog("error.txt", "received zone name NOT as string, please check the OIDs for CPS zone names", true)
 		os.Exit(1)
 	}
@@ -88,9 +92,10 @@ func saveZone(pdu g.SnmpPDU) error {
 }
 
 func saveCPS(pdu g.SnmpPDU) error {
-	fmt.Printf("%s = ", pdu.Name)
+	//fmt.Printf("%s = ", pdu.Name)
 	switch pdu.Type {
 	case g.OctetString:
+		fmt.Println("received CPS as string instead as int, please check the OIDs for CPS")
 		pan.Wlog("error.txt", "received CPS as string instead as int, please check the OIDs for CPS", true)
 		os.Exit(1)
 	default:
