@@ -120,13 +120,13 @@ IV. Script details:
     Examples:
 
     running "show clock" once on the endpoint every 10 seconds (-t 10)
-    >./GoPAN run ssh -i firewall-ip -p password -u username -r 'show clock' -t 10
+    >./GoPAN run ssh -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt; -r 'show clock' -t 10
 
     running "run show system info" on the endpoint in config mode(used run because the firewall will be in config mode but could be any configuration command)
-    >./GoPAN run ssh -i firewall-ip -p password -u username -r 'run show system info' -c
+    >./GoPAN run ssh -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt; -r 'run show system info' -c
 
     Running commands from "commands.txt" (-f) in configuration mode (-c)
-    >./GoPAN run ssh -i firewall-ip -p password -u username -r commands.txt -fc
+    >./GoPAN run ssh -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt; -r commands.txt -fc
 
 
 3. urlcat.
@@ -137,26 +137,26 @@ IV. Script details:
 
     requesting a category for a single website
 
-    >./GoPAN api urlcat -i firewall-ip -p password -u username -w www.facebook.com
+    >./GoPAN api urlcat -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt; -w www.facebook.com
 
     requesting categories for urls inside a text file
 
-    >./GoPAN api urlcat -i firewall-ip -p password -u username -w websites.txt -f
+    >./GoPAN api urlcat -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt; -w websites.txt -f
 
 4. cutover
 
     Useful scripts for maintenance windows. It checks: incomplete mac addresses, interface status, speed and duplex information and send gratuitous ARPs on all interfaces.
 
-    >./GoPAN api cutover -i firewall-ip -p password -u username
+    >./GoPAN api cutover -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt;
 
 5. Keygen
 
     Generates and prints an API key from a palo alto firewall
 
-    >./GoPAN api keygen -i firewall-ip -p password -u username
+    >./GoPAN api keygen -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt;
 
 6. Threat
 
     Exports the firewall threat database from a firewall into excel. Including threat ID, name, description, type, severity and CVE.
 
-    >./GoPAN api threat -i firewall-ip -p password -u username
+    >./GoPAN api threat -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt;
