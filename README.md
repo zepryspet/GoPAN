@@ -105,10 +105,13 @@ IV. Script details:
 
     Getting the CPS per zone in palo alto firewall using SNMP (requieres PAN-OS 8.0+) the csv files will be saved in the working directory. You usually run it for a week or 2 and then open the csv to get the max CPS per zone and set the alert to 1.2x and the block rate to 1.5x
 
-    Example
-    > ./GoPAN run cps -c snmp-community -i firewall-ip
+    Example using SNMPv2
+    > ./GoPAN run cps -c <snmp-community> -i <firewall-ip>
 
-    Note:Default polling time is 10 seconds (SNMP statistics are updated every 10 sec). use "-s" flag to change it if needed
+    Example using SNMPv3
+    >./GoPAN run cps -i <firewall-ip> -c <username> -v 3 -a <auth-password> -x <privacy-password>
+
+    Note:Default polling time is 10 seconds (SNMP statistics are updated every 10 sec). use "-s" flag to change it if needed. Keep in mind that file rotation is not implemented so keep an eye on disk space.
 
 2. ssh.
 

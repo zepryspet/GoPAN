@@ -3,7 +3,7 @@ package cps
 import (
 	"fmt"
 	g "github.com/soniah/gosnmp"
-	//"log"
+	"errors"
 	"os"
 	"strconv"
 	"github.com/zepryspet/GoPAN/utils"
@@ -14,19 +14,50 @@ var zones []string
 var cps []int
 
 //function to SNMP walk on the  CPS OIDs and save the output into text files based on the zone name.
-func Snmpgen(fqdn string, community string, seconds int) {
+func Snmpgen(fqdn string, community string, seconds int, version int, authv3 string, privacyv3 string) {
+	//Validating SNMPv3 password and snmp version
+	if version == 3{
+		if authv3 =="" || privacyv3 ==""{
+			e := "empty snmpv3 password"
+			pan.Logerror(errors.New(e), true)
+		}
+	}else if version !=2{
+		e := "non-supported snmp version"
+		pan.Logerror(errors.New(e), true)
+	}
 	sec := time.Duration( seconds)
 	loop := true
 	for loop {
-		// Do verbose logging of packets.
 		port, _ := strconv.ParseUint("161", 10, 16)
-		params := &g.GoSNMP{
-			Target:    fqdn,
-			Port:      uint16(port),
-			Community: community,
-			Version:   g.Version2c,
-			Timeout:   time.Duration(10) * time.Second,
-			//Logger:    log.New(os.Stdout, "", 0),
+		params := &g.GoSNMP{}
+		if version ==2{
+			params = &g.GoSNMP{
+				Target:    fqdn,
+				Port:      uint16(port),
+				Community: community,
+				Version:   g.Version2c,
+				Timeout:   time.Duration(10) * time.Second,
+				Retries:	3,
+				//Logger:    log.New(os.Stdout, "", 0), removed verbose output, too much noise
+			}
+		}else if version ==3{
+			//fmt.Println(passv3)
+			params = &g.GoSNMP{
+				Target:        fqdn,
+				Port:          uint16(port),
+				Version:       g.Version3,
+				Timeout:       time.Duration(10) * time.Second,
+				SecurityModel: g.UserSecurityModel,
+				MsgFlags:      g.AuthPriv,
+				Retries:	3,
+				SecurityParameters: &g.UsmSecurityParameters{
+					UserName: community,
+					AuthenticationProtocol:   g.SHA,
+					AuthenticationPassphrase: authv3,
+					PrivacyProtocol:          g.AES,
+					PrivacyPassphrase:        privacyv3,
+				},
+			}
 		}
 		err := params.Connect()
 		if err != nil {

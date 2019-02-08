@@ -4,26 +4,30 @@ import (
 	"fmt"
 	"strings"
 	"github.com/spf13/cobra"
-    "github.com/zepryspet/GoPAN/run/ssh"
-    "github.com/zepryspet/GoPAN/run/cps"
-    "github.com/zepryspet/GoPAN/api/urlcat"
-    "github.com/zepryspet/GoPAN/api/cutover"
-    "github.com/zepryspet/GoPAN/api/threat"
-    "github.com/zepryspet/GoPAN/utils"
-    "time"
+  "github.com/zepryspet/GoPAN/run/ssh"
+  "github.com/zepryspet/GoPAN/run/cps"
+  "github.com/zepryspet/GoPAN/api/urlcat"
+  "github.com/zepryspet/GoPAN/api/cutover"
+  "github.com/zepryspet/GoPAN/api/threat"
+  "github.com/zepryspet/GoPAN/utils"
+  "time"
 )
 
 func main() {
-    //Variables used for flags
+  //Variables used for flags
 	var firewallIP string
-    var community string
-    var pass string
-    var user string
-    var command string
-    var polltime int
-    var seconds int
-    var flag1 bool
-    var flag2 bool
+  var community string
+  var pass string
+  var user string
+  var command string
+  var polltime int
+  var seconds int
+	var version int
+	var privacyv3 string
+	var authv3 string
+  var flag1 bool
+  var flag2 bool
+
 
     //"Run" top command section
     //
@@ -31,7 +35,7 @@ func main() {
 		Use:	 "run",
 		Short: "Pre-built scripts to collect and process firewall data using non-api methods like SNMP or SSH",
 		Long: `Set of scripts that will collect and process firewall
-information`,
+		information`,
 		Args: cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Print: " + strings.Join(args, " "))
@@ -43,20 +47,24 @@ information`,
         Use:	 "cps",
 		Short: "Generate a CPS report from a Palo alto firewall",
 		Long: `Send an SNMP query to get the CPS per zone information
-and generate an excel table with the historical data.
-Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
+		and generate an excel table with the historical data.
+		Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 				fmt.Println("firewall IP: " + firewallIP)
-                cps.Snmpgen(firewallIP, community, polltime)
+                cps.Snmpgen(firewallIP, community, polltime, version, authv3, privacyv3)
 		},
 	}
     //Seting requiered flags
 	cmdCPS.Flags().StringVarP(&firewallIP, "ip-address", "i", "", "firewall IP address or FQDN")
 	cmdCPS.MarkFlagRequired("ip-address")
-    cmdCPS.Flags().StringVarP(&community, "community", "c", "", "SNMPv2 community")
+  cmdCPS.Flags().StringVarP(&community, "community", "c", "", "SNMPv2 community or SNMPv3 user")
 	cmdCPS.MarkFlagRequired("community")
-    cmdCPS.Flags().IntVarP(&polltime, "polltime", "s", 10, "SNMP interval in polltime to collect LPS")
+  cmdCPS.Flags().IntVarP(&polltime, "polltime", "s", 10, "SNMP interval in polltime to collect LPS")
+	cmdCPS.Flags().IntVarP(&version, "version", "v", 2, "use 2 for SNMPv2 or 3 for SNMPv3")
+	cmdCPS.Flags().StringVarP(&authv3, "authv3", "a", "", "Auth password in case snmpv3 is used")
+	cmdCPS.Flags().StringVarP(&privacyv3, "privacyv3", "x", "", "password in case snmpv3 is used")
+
 
     //"run ssh"
     var cmdSSH = &cobra.Command{
@@ -79,17 +87,17 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 		},
 	}
     //missing timeout, filename or command
-    cmdSSH.Flags().StringVarP(&firewallIP, "ip-address", "i", "", "firewall IP address or FQDN")
+  cmdSSH.Flags().StringVarP(&firewallIP, "ip-address", "i", "", "firewall IP address or FQDN")
 	cmdSSH.MarkFlagRequired("ip-address")
-    cmdSSH.Flags().StringVarP(&user, "user", "u", "", "firewall username")
+  cmdSSH.Flags().StringVarP(&user, "user", "u", "", "firewall username")
 	cmdSSH.MarkFlagRequired("user")
-    cmdSSH.Flags().StringVarP(&pass, "password", "p", "", "firewall password")
+  cmdSSH.Flags().StringVarP(&pass, "password", "p", "", "firewall password")
 	cmdSSH.MarkFlagRequired("password")
-    cmdSSH.Flags().StringVarP(&command, "command", "r", "", "ssh command or file with commands to run on the firewall")
+  cmdSSH.Flags().StringVarP(&command, "command", "r", "", "ssh command or file with commands to run on the firewall")
 	cmdSSH.MarkFlagRequired("password")
-    cmdSSH.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag if you're sending commands in a text file")
-    cmdSSH.Flags().BoolVarP(&flag2, "isConfig", "c", false , "set this flag if you're sending configuration commands")
-    cmdSSH.Flags().IntVarP(&seconds, "times", "t", 0 , "time in seconds to repeat the commands indefinetily")
+  cmdSSH.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag if you're sending commands in a text file")
+  cmdSSH.Flags().BoolVarP(&flag2, "isConfig", "c", false , "set this flag if you're sending configuration commands")
+  cmdSSH.Flags().IntVarP(&seconds, "times", "t", 0 , "time in seconds to repeat the commands indefinetily")
 
 
     //"api" top command section
@@ -130,9 +138,9 @@ Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
             urlcat.Request(firewallIP, pan.Keygen(firewallIP, user, pass), command, flag1)
 		},
 	}
-    cmdURL.Flags().StringVarP(&command, "website", "w", "", "url or filename with urls")
+  cmdURL.Flags().StringVarP(&command, "website", "w", "", "url or filename with urls")
 	cmdURL.MarkFlagRequired("website")
-    cmdURL.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag to true if you're have the urls in a text file")
+  cmdURL.Flags().BoolVarP(&flag1, "isFile", "f", false , "set this flag to true if you're have the urls in a text file")
 
     //"api cutover" basic checks during maintenance windows.
     var cmdCut = &cobra.Command{

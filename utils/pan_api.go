@@ -8,22 +8,23 @@ import (
 	"net/url"
 	"os"
 	"time"
-    "errors"
-    "strconv"
-    "strings"
+  "errors"
+  "strconv"
+  "strings"
+	"fmt"
 )
 
 //Function to generate an API key
 func Keygen(fqdn string, user string, pass string) string {
-    
+
     apiKey := ""
-    
+
     //Validating that all login flags are set
     if (fqdn == "" || user =="" || pass=="") {
         e := "Error: required flags \"ip-address\", \"password\" or \"user\" not set"
         println (e)
         Logerror(errors.New(e), true)
-    } 
+    }
 	//Defining secondary variables
 	req, err := url.Parse("https://" + fqdn + "/api/?")
 	if err != nil {
@@ -37,7 +38,7 @@ func Keygen(fqdn string, user string, pass string) string {
     resp, err := HttpValidate(req.String(), false)
     if err != nil {
 		Logerror(err, true)
-	} 
+	}
     doc := etree.NewDocument()
     doc.ReadFromBytes(resp)
     for _, e := range doc.FindElements("./response/result/*") {
@@ -67,13 +68,14 @@ func Wlog(fileName string, text string, newline bool) {
 func Logerror(err error, fatal bool) {
 	if err != nil {
 		Wlog("error.txt", err.Error(), true)
+		fmt.Println (err.Error())
         if fatal{
-		  os.Exit(1)
+		  		os.Exit(1)
         }
 	}
 }
 
-//function to validate succesful http request received a 200 code and a "success" on it. 
+//function to validate succesful http request received a 200 code and a "success" on it.
 //It receives an http request and a debug flag in case you want to see the HTTP calls
 //It returns the response and an error if something fails
 
@@ -93,7 +95,7 @@ func HttpValidate (req string, debug bool) ([]byte , error) {
 		Timeout:   time.Second * 15,
 		Transport: tr,
 	}
-    
+
     resp, err := netClient.Get(req)
 	if err != nil {
 		Logerror(err, true)
@@ -130,22 +132,22 @@ func CmdGen (cmd string) string {
     for _, element := range words {
         if strings.HasPrefix(element, "n_"){
             element = strings.TrimPrefix(element, "n_")
-            xml = xml + "<entry name = '" + element + "'>"   
+            xml = xml + "<entry name = '" + element + "'>"
         }else if strings.HasPrefix(element, "t_"){
             element = strings.TrimPrefix(element, "t_")
             xml = xml + element
         }else{
-            xml = xml + "<" + element + ">"   
+            xml = xml + "<" + element + ">"
         }
     }
-    //Closing the xml 
+    //Closing the xml
     for i := len(words)-1; i >= 0; i--{
         if strings.HasPrefix(words[i], "n_"){
-            xml = xml + "</entry>"   
+            xml = xml + "</entry>"
         }else if strings.HasPrefix(words[i], "t_"){
             //Do nothing
         }else{
-            xml = xml + "</" + words[i] + ">"   
+            xml = xml + "</" + words[i] + ">"
         }
     }
     return xml
