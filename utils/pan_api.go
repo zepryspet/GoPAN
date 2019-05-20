@@ -125,7 +125,6 @@ func HttpPostFile(req string, fn string) ([]byte, error) {
 	}
 	resp, err := netClient.Do(r)
 	respBody, err := ioutil.ReadAll(resp.Body)
-	print(string(respBody))
 	return respBody, err
 }
 

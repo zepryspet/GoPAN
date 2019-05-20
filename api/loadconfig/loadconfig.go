@@ -5,7 +5,6 @@ import (
 	"github.com/beevik/etree"
 	pan "github.com/zepryspet/GoPAN/utils"
 	"net/url"
-	"os"
 )
 
 func Load(fqdn string, user string, pass string, fn string) {
@@ -21,10 +20,9 @@ func Load(fqdn string, user string, pass string, fn string) {
 	req.RawQuery = q.Encode()
 	//Sending the query to the firewall
 	resp, err := pan.HttpPostFile(req.String(), fn)
-	os.Exit(0)
 	pan.Logerror(err, true)
 	doc := etree.NewDocument()
 	doc.ReadFromBytes(resp)
-	e := doc.FindElement("./response/result/msg")
+	e := doc.FindElement("./response/msg/line")
 	fmt.Print("%v\n", e.Text())
 }
