@@ -7,6 +7,13 @@ import (
 	"net/url"
 )
 
+/*
+Load a configuration into a firewall, without committing.
+fqdn: Firewall fqdn
+user: username
+pass: password
+fn: Path to local file to upload.
+*/
 func Load(fqdn string, user string, pass string, fn string) {
 	//Generating api Key
 	apikey := pan.Keygen(fqdn, user, pass)

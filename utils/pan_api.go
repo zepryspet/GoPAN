@@ -78,6 +78,9 @@ func Logerror(err error, fatal bool) {
 	}
 }
 
+/*
+Using a multi-part form, uploads a file as a named configuration snapshot.
+*/
 func HttpPostFile(req string, fn string) ([]byte, string, error) {
 
 	file, err := os.Open(fn)

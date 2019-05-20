@@ -30,6 +30,9 @@ func main() {
 	var flag2 bool
 	var file string
 
+	// Load an XML configuration file as a "named" config file.
+	// THe filename (sans path) is what is used as the destination name.
+	// For instance: /tmp/backup.xml -> imported as backup.xml
 	var cmdLoad = &cobra.Command{
 		Use:   "loadconfig",
 		Short: "Load a given filename onto the firewall.",
