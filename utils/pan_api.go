@@ -78,7 +78,7 @@ func Logerror(err error, fatal bool) {
 	}
 }
 
-func HttpPostFile(req string, fn string) ([]byte, error) {
+func HttpPostFile(req string, fn string) ([]byte, string, error) {
 
 	file, err := os.Open(fn)
 	if err != nil {
@@ -87,11 +87,11 @@ func HttpPostFile(req string, fn string) ([]byte, error) {
 
 	fileContents, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 	fi, err := file.Stat()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 	file.Close()
 
@@ -99,13 +99,13 @@ func HttpPostFile(req string, fn string) ([]byte, error) {
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("file", fi.Name())
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 	part.Write(fileContents)
 
 	err = writer.Close()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	//Ignoring TLS certificate checking
@@ -125,7 +125,7 @@ func HttpPostFile(req string, fn string) ([]byte, error) {
 	}
 	resp, err := netClient.Do(r)
 	respBody, err := ioutil.ReadAll(resp.Body)
-	return respBody, err
+	return respBody, fi.Name(), err
 }
 
 //function to validate succesful http request received a 200 code and a "success" on it.
