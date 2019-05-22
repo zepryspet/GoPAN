@@ -29,6 +29,7 @@ func main() {
 	var flag1 bool
 	var flag2 bool
 	var file string
+	var commit bool
 
 	// Load an XML configuration file as a "named" config file.
 	// THe filename (sans path) is what is used as the destination name.
@@ -38,7 +39,7 @@ func main() {
 		Short: "Load a given filename onto the firewall.",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("firewall IP: " + firewallIP)
-			loadconfig.Load(firewallIP, user, pass, file)
+			loadconfig.Load(firewallIP, user, pass, file, commit)
 		},
 	}
 
@@ -50,6 +51,7 @@ func main() {
 	cmdLoad.MarkFlagRequired("password")
 	cmdLoad.Flags().StringVarP(&file, "filename", "f", "", "Path to file to load")
 	cmdLoad.MarkFlagRequired("filename")
+	cmdLoad.Flags().BoolVarP(&commit, "commit", "c", false, "Commit config after load.")
 
 	//"Run" top command section
 	//

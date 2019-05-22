@@ -208,3 +208,58 @@ func CmdGen(cmd string) string {
 	}
 	return xml
 }
+
+/*
+Poll the status of a job ID and return when it is finished.
+*/
+func PollJob(fqdn string, apikey string, jobid string) {
+	req, err := url.Parse("https://" + fqdn + "/api/?")
+	cmd := fmt.Sprintf("<show><jobs><id>%v</id></jobs></show>", jobid)
+	q := url.Values{}
+	q.Add("type", "op")
+	q.Add("key", apikey)
+	q.Add("cmd", cmd)
+	req.RawQuery = q.Encode()
+
+	resp, err := HttpValidate(req.String(), false)
+	Logerror(err, true)
+	doc := etree.NewDocument()
+	doc.ReadFromBytes(resp)
+
+	status := doc.FindElement("./response/result/job/status").Text()
+	for status == "ACT" {
+		resp, err = HttpValidate(req.String(), false)
+		Logerror(err, true)
+		doc = etree.NewDocument()
+		doc.ReadFromBytes(resp)
+
+		status = doc.FindElement("./response/result/job/status").Text()
+		progress := doc.FindElement("./response/result/job/progress").Text()
+		fmt.Printf("Commit status: %v (%v)\n", status, progress)
+		time.Sleep(2 * time.Second)
+	}
+}
+
+/*
+Commit the current candidate configuration
+*/
+func Commit(fqdn string, apikey string) {
+	req, err := url.Parse("https://" + fqdn + "/api/?")
+	cmd := (CmdGen("commit"))
+	q := url.Values{}
+	q.Add("type", "commit")
+	q.Add("key", apikey)
+	q.Add("cmd", cmd)
+	req.RawQuery = q.Encode()
+	//Sending the query to the firewall
+	resp, err := HttpValidate(req.String(), false)
+	Logerror(err, true)
+	doc := etree.NewDocument()
+	doc.ReadFromBytes(resp)
+
+	e := doc.FindElement("./response/result/msg/line")
+	fmt.Printf("%v\n", e.Text())
+	jobid := doc.FindElement("./response/result/job").Text()
+
+	PollJob(fqdn, apikey, jobid)
+}
