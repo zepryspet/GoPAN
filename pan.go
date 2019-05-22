@@ -57,7 +57,7 @@ func main() {
 		Use:   "run",
 		Short: "Pre-built scripts to collect and process firewall data using non-api methods like SNMP or SSH",
 		Long: `Set of scripts that will collect and process firewall
-		information`,
+        information`,
 		Args: cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Print: " + strings.Join(args, " "))
@@ -69,8 +69,8 @@ func main() {
 		Use:   "cps",
 		Short: "Generate a CPS report from a Palo alto firewall",
 		Long: `Send an SNMP query to get the CPS per zone information
-		and generate an excel table with the historical data.
-		Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
+        and generate an excel table with the historical data.
+        Recommended to run for a week. Only PAN-OS 8.0+ is supported`,
 		Args: cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("firewall IP: " + firewallIP)
