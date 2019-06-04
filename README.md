@@ -160,3 +160,11 @@ IV. Script details:
     Exports the firewall threat database from a firewall into excel. Including threat ID, name, description, type, severity and CVE.
 
     >./GoPAN api threat -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt;
+
+7. Loadconfig
+   
+   Loads a candidate configuration from a local file on disk.
+   
+   If "-c" is provided, the new candidate config will be committed.
+   
+   >./gopan loadconfig -f &lt;path-to-local-file&gt; -i &lt;firewall-ip&gt; -p &lt;password&gt; -u &lt;username&gt;
